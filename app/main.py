@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 
+from app.core.config import get_app_settings
+
 
 def get_application() -> FastAPI:
-    application = FastAPI()
+    settings = get_app_settings()
+
+    application = FastAPI(**settings.fastapi_kwargs)
 
     return application
 
