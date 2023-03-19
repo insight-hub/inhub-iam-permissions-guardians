@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import get_app_settings
+from app.api.routes.api import api_router
 
 
 def get_application() -> FastAPI:
@@ -8,6 +9,8 @@ def get_application() -> FastAPI:
     settings.configure_logging()
 
     application = FastAPI(**settings.fastapi_kwargs)
+
+    application.include_router(api_router)
 
     return application
 
