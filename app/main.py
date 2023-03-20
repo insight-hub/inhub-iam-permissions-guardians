@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from redis import RedisError
 
 from app.core.config import get_app_settings
 from app.api.routes.api import api_router
 from app.database.db import Base, engine
+from app.services.errors import redis_error_handler
 
 # TODO temp
 Base.metadata.create_all(bind=engine)
@@ -13,6 +15,8 @@ def get_application() -> FastAPI:
     settings.configure_logging()
 
     application = FastAPI(**settings.fastapi_kwargs)
+
+    application.add_exception_handler(RedisError, redis_error_handler)
 
     application.include_router(api_router)
 
