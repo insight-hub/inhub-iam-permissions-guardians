@@ -1,4 +1,4 @@
-from app.models.domain.user import User
+from typing import Literal
 from app.models.schemas.rwschema import RWSchema
 
 
@@ -8,9 +8,15 @@ class UserJoin(RWSchema):
     password: str
 
 
-class UserWithToken(User):
-    token: str
+class UserCreated(RWSchema):
+    username: str
+    email: str
+
+
+class UserCreatedRes(RWSchema):
+    status: int
+    user: UserCreated
 
 
 class UserInResponse(RWSchema):
-    user: UserWithToken
+    pass
