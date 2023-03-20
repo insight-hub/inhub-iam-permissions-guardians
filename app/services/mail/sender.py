@@ -32,7 +32,7 @@ class HTMLEmail(EmailSchema):
     body: Dict[str, Any]
 
 
-async def send_html_mail(email: HTMLEmail, template_name: str):
+async def send_html_mail(email: HTMLEmail, *, template_name: str):
     message = MessageSchema(
         subject=email.subject,
         recipients=email.to,
