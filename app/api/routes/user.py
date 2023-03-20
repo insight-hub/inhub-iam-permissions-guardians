@@ -2,29 +2,11 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from app.api.dependenies.database import get_repository
-from app.database.errors import EntityDoesNotExist
 from app.database.repositories.user import UserRepository
 from app.models.schemas.user import UserJoin
+from app.utils.auth import check_email_taken, check_username_taken
 
 router = APIRouter()
-
-
-def check_username_taken(repo: UserRepository, username: str):
-    try:
-        repo.get_by_username(username=username)
-    except EntityDoesNotExist:
-        return False
-
-    return True
-
-
-def check_email_taken(repo: UserRepository, email: str):
-    try:
-        repo.get_by_email(email=email)
-    except EntityDoesNotExist:
-        return False
-
-    return True
 
 
 @router.post('/join')
