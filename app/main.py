@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from redis import RedisError
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_app_settings
 from app.api.routes.api import api_router
@@ -15,6 +16,14 @@ def get_application() -> FastAPI:
     settings.configure_logging()
 
     application = FastAPI(**settings.fastapi_kwargs)
+
+    # TODO
+    application.add_middleware(
+        CORSMiddleware,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     application.add_exception_handler(RedisError, redis_error_handler)
 

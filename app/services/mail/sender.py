@@ -44,6 +44,8 @@ async def send_html_mail(email: HTMLEmail, *, template_name: str):
 
     try:
         await fm.send_message(message, template_name)
+        logger.info(
+            f'Mail has been sended to {email.to}')
 
     except ConnectionErrors as e:
         logger.error(e)
