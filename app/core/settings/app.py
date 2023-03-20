@@ -3,7 +3,7 @@ import sys
 
 from enum import Enum
 from typing import Any, Dict, Tuple
-from pydantic import BaseSettings, PostgresDsn
+from pydantic import BaseSettings, EmailStr, PostgresDsn, RedisDsn
 from loguru import logger
 
 from app.core.logging import InterceptHandler
@@ -20,7 +20,13 @@ class AppSettings(BaseSettings):
     debug: bool = False
     version: str = '0.0.1'
 
-    db_url: PostgresDsn
+    pg_url: PostgresDsn
+    redis_url: RedisDsn
+
+    mail_server: str
+    mail_username: str
+    mail_password: str
+    mail_from: EmailStr
 
     logging_level: int = logging.INFO
     loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
