@@ -1,16 +1,24 @@
-FROM python:3.11.0-alpine
+FROM python:3.11-slim as build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN apt-get update
 
-RUN set -eux \
-    && apk add --no-cache --virtual .build-deps build-base \
-         openssl-dev libffi-dev gcc cargo musl-dev python3-dev \
-    && pip install --upgrade pip setuptools wheel \
-    && pip install -r /usr/src/app/requirements.txt 
+COPY ./requirements.txt . 
 
-COPY . /usr/src/app/
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=build /app/wheels /wheels
+COPY --from=build /app/requirements.txt .
+RUN pip install --no-cache /wheels/*
+COPY . .
+
+EXPOSE 8888
+CMD ["uvicorn", "app.main:app", "--port", "8888"]
