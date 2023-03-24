@@ -2,9 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+from app.core.config import get_app_settings
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+settings = get_app_settings()
+
+engine = create_engine(settings.pg_url)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
