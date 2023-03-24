@@ -11,7 +11,6 @@ RUN set -eux \
     && apk add --no-cache --virtual .build-deps build-base \
          openssl-dev libffi-dev gcc cargo musl-dev python3-dev \
     && pip install --upgrade pip setuptools wheel \
-    && pip install -r /usr/src/app/requirements.txt \
-    && rm -rf /root/.cache/pip
+    && pip install -r /usr/src/app/requirements.txt 
 
 COPY . /usr/src/app/
