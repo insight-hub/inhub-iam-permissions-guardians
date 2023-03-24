@@ -1,7 +1,6 @@
 from app.database.errors import EntityDoesNotExist
 from app.database.repositories.base import BaseRespository
 from app.database.orm.user import User
-from app.models.schemas.user import UserJoin
 
 
 class UserRepository(BaseRespository):
@@ -23,9 +22,9 @@ class UserRepository(BaseRespository):
 
         raise EntityDoesNotExist
 
-    def create_new_user(self, *, user: UserJoin):
-        db_user = User(username=user.username,
-                       email=user.email, hashed_password="test")
+    def create_new_user(self, *, username, email, password):
+        db_user = User(username=username,
+                       email=email, hashed_password=password + "hash")
 
         self.connection.add(db_user)
         self.connection.commit()
