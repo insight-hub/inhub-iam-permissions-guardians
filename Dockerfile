@@ -17,8 +17,10 @@ WORKDIR /app
 
 COPY --from=build /app/wheels /wheels
 COPY --from=build /app/requirements.txt .
-RUN pip install --no-cache /wheels/*
+RUN pip install --no-cache /wheels/* \
+&& rm -rf /root/.cache/pip
+
 COPY . .
 
-EXPOSE 8888
-CMD ["uvicorn", "app.main:app", "--port", "8888"]
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--port", "8000"]
