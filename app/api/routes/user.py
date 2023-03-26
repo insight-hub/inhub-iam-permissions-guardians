@@ -4,9 +4,8 @@ from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 from app.api.dependenies.database import get_repository
 from app.database.repositories.user import UserRepository
-from app.models.schemas.user import UserCreated, UserCreatedRes
-from app.services import otp
-from app.services.user import send_join_otp
+from app.models.schemas.user import UserCreated, UserCreatedRes, UserInResponse, UserInUpdate
+from app.services import user as userService, otp as otpService
 from app.utils.auth import check_email_taken, check_username_taken
 
 router = APIRouter()
@@ -31,7 +30,7 @@ async def create_user(baskground_task: BackgroundTasks,
     db_user = user_repository.create_new_user(
         username=username, email=email, password=password)
 
-    baskground_task.add_task(send_join_otp, email, username)
+    baskground_task.add_task(userService.send_join_otp, email, username)
 
     return UserCreatedRes(status=HTTP_201_CREATED,
                           user=UserCreated(username=db_user.username,
@@ -39,9 +38,19 @@ async def create_user(baskground_task: BackgroundTasks,
 
 
 @router.post('/otp')
-async def check_one_time_password(username: str = Form(), password: str = Form()):
+async def check_one_time_password(username: str = Form(),
+                                  otp: str = Form(),
+                                  user_repository: UserRepository = Depends(
+                                      get_repository(UserRepository))):
     try:
-        otp.check_otp(username, password)
+        if not otpService.check_otp(username, otp):
+            return
+
+        db_user = user_repository.update_user(
+            user=UserInUpdate(is_mail_confirmed=True))
+
+        return {'user': db_user}
+
     except Exception as e:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
                             detail=str(e))
@@ -50,6 +59,6 @@ async def check_one_time_password(username: str = Form(), password: str = Form()
 @router.put('/otp')
 async def update_one_time_password(username: str = Form()):
     try:
-        otp.update_otp(username)
+        otpService.update_otp(username)
     except Exception as e:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))

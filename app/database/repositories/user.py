@@ -1,6 +1,7 @@
 from app.database.errors import EntityDoesNotExist
 from app.database.repositories.base import BaseRespository
 from app.database.orm.user import User
+from app.models.schemas.user import UserInUpdate
 from app.services import security
 
 
@@ -33,3 +34,6 @@ class UserRepository(BaseRespository):
         self.connection.refresh(db_user)
 
         return db_user
+
+    def update_user(self, *, user: UserInUpdate):
+        return self.connection.query(User).filter(User)
