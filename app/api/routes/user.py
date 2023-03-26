@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException
 from pydantic import EmailStr
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -19,16 +20,17 @@ async def create_user(baskground_task: BackgroundTasks,
                       user_repository: UserRepository = Depends(
                           get_repository(UserRepository))):
 
-    if check_email_taken(email=email, repo=user_repository):
+    if check_email_taken(user_repository, email):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
                             detail='Email already taken')
 
-    if check_username_taken(username=username, repo=user_repository):
+    if check_username_taken(user_repository, username):
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
                             detail='Username already taken')
 
     db_user = user_repository.create_new_user(
         username=username, email=email, password=password)
+
     user_created = UserCreated(email=db_user.email, username=db_user.username)
 
     baskground_task.add_task(send_join_otp, user_created)
