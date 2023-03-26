@@ -33,7 +33,8 @@ async def create_user(baskground_task: BackgroundTasks,
     baskground_task.add_task(userService.send_join_otp, email, username)
 
     return UserCreatedRes(status=HTTP_201_CREATED,
-                          user=UserCreated(username=db_user.username,
+                          user=UserCreated(id=db_user.uuid,
+                                           username=db_user.username,
                                            email=db_user.email))
 
 
@@ -47,7 +48,7 @@ async def check_one_time_password(username: str = Form(),
             return
 
         db_user = user_repository.update_user(
-            user=UserInUpdate(is_mail_confirmed=True))
+            user=UserInUpdate(username=username, is_mail_confirmed=True))
 
         return {'user': db_user}
 

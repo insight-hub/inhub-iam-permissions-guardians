@@ -1,6 +1,8 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import EmailStr
+from app.models.domain.user import User
 from app.models.schemas.rwschema import RWSchema
 
 
@@ -11,6 +13,7 @@ class UserJoin(RWSchema):
 
 
 class UserCreated(RWSchema):
+    id: UUID
     username: str
     email: str
 
@@ -27,5 +30,10 @@ class UserInUpdate(RWSchema):
     is_mail_confirmed: Optional[bool] = None
 
 
-class UserInResponse(RWSchema):
-    pass
+class UserWithToken(User):
+    token: str
+
+
+class UserInResponse(User):
+    status: int
+    user: UserWithToken

@@ -36,4 +36,18 @@ class UserRepository(BaseRespository):
         return db_user
 
     def update_user(self, *, user: UserInUpdate):
-        return self.connection.query(User).filter(User)
+        db_user = self.connection.query(
+            User).filter(User.username == user.username).first()
+
+        db_user.username = user.username or db_user.username
+        db_user.email = user.email or db_user.email
+        db_user.is_mail_confirmed = user.is_mail_confirmed or db_user.is_mail_confirmed
+
+        if user.password:
+            db_user.hashed_password = security.get_password_hash(user.password)
+
+        self.connection.add(db_user)
+        self.connection.commit()
+        self.connection.refresh(db_user)
+
+        return db_user
