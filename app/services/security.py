@@ -4,7 +4,7 @@ CLIENT_SECRET = "SECRET"
 ALGORITM = "HS256"
 TOKEN_EXPIRED_MINUTES = 1
 
-pwd_context = CryptContext(schemes=['bycript'], deprecated='auto')
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 def get_password_hash(password) -> str:
