@@ -1,6 +1,7 @@
 from app.database.errors import EntityDoesNotExist
 from app.database.repositories.base import BaseRespository
 from app.database.orm.user import User
+from app.services import security
 
 
 class UserRepository(BaseRespository):
@@ -24,7 +25,8 @@ class UserRepository(BaseRespository):
 
     def create_new_user(self, *, username, email, password):
         db_user = User(username=username,
-                       email=email, hashed_password=password + "hash")
+                       email=email,
+                       hashed_password=security.get_password_hash(password))
 
         self.connection.add(db_user)
         self.connection.commit()

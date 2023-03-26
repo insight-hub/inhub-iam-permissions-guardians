@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException
 from pydantic import EmailStr
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -31,9 +30,8 @@ async def create_user(baskground_task: BackgroundTasks,
     db_user = user_repository.create_new_user(
         username=username, email=email, password=password)
 
-    user_created = UserCreated(email=db_user.email, username=db_user.username)
-
-    baskground_task.add_task(send_join_otp, user_created)
+    baskground_task.add_task(send_join_otp, email, username)
 
     return UserCreatedRes(status=HTTP_201_CREATED,
-                          user=user_created)
+                          user=UserCreated(username=db_user.username,
+                                           email=db_user.email))

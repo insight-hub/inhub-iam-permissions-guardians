@@ -7,8 +7,8 @@ from app.database.db import Base
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    id = Column(Integer, index=True)
+    username = Column(String, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     is_mail_confirmed = Column(Boolean, default=False)
     hashed_password = Column(String)
