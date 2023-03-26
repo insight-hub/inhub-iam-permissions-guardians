@@ -1,9 +1,5 @@
 from passlib.context import CryptContext
 
-CLIENT_SECRET = "SECRET"
-ALGORITM = "HS256"
-TOKEN_EXPIRED_MINUTES = 1
-
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 

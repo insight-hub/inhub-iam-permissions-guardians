@@ -13,10 +13,10 @@ def get_application() -> FastAPI:
 
     application = FastAPI(**settings.fastapi_kwargs)
 
-    # TODO
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=['http://localhost:8000'],
+        # TODO temporary allow all origins
+        allow_origins=['*'],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

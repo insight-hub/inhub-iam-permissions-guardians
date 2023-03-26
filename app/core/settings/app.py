@@ -3,7 +3,7 @@ import sys
 
 from enum import Enum
 from typing import Any, Dict, Tuple
-from pydantic import BaseSettings, EmailStr, PostgresDsn, RedisDsn
+from pydantic import BaseSettings, EmailStr, PostgresDsn, RedisDsn, SecretStr
 from loguru import logger
 
 from app.core.logging import InterceptHandler
@@ -30,6 +30,8 @@ class AppSettings(BaseSettings):
 
     logging_level: int = logging.INFO
     loggers: Tuple[str, str] = ("uvicorn.asgi", "uvicorn.access")
+
+    secret_key: SecretStr
 
     class Config:
         validate_arguments = True

@@ -7,8 +7,7 @@ from app.models.domain.user import User
 
 from app.models.schemas.jwt import JWTMeta, JWTSubjects, JWTUser
 
-TOKEN_EXPIRED_MINUTES = 1
-CLIENT_SECRET = "SECRET"
+TOKEN_EXPIRED_MINUTES = 60 * 24
 ALGORIHTM = "HS256"
 
 
@@ -23,7 +22,7 @@ def create_access_token(*,
 
 
 def create_token_for_user(user: User, secret_key: str) -> str:
-    create_access_token(
+    return create_access_token(
         jwt_content=JWTUser(username=user.username).dict(),
         secret_key=secret_key,
         expires_delta=timedelta(minutes=TOKEN_EXPIRED_MINUTES)

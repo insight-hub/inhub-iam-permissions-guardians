@@ -30,10 +30,10 @@ class UserInUpdate(RWSchema):
     is_mail_confirmed: Optional[bool] = None
 
 
-class UserWithToken(User):
+class UserWithToken(User, RWSchema):
     token: str
 
 
-class UserInResponse(User):
+class UserInResponse(RWSchema):
     status: int
     user: UserWithToken
