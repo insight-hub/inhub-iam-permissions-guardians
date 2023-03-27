@@ -13,6 +13,8 @@ conf = ConnectionConfig(
     MAIL_USERNAME=settings.mail_username,
     MAIL_PASSWORD=settings.mail_password,
     MAIL_FROM=settings.mail_from,
+    # TODO different departments
+    MAIL_FROM_NAME=f'InsightHub Security',
     MAIL_PORT=465,
     MAIL_SERVER=settings.mail_server,
     MAIL_STARTTLS=False,
