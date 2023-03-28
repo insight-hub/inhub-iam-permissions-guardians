@@ -22,5 +22,6 @@ class Profile(Base):
     updated_at = Column(DateTime(timezone=True),
                         default=func.now(), onupdate=func.now())
 
-    username = mapped_column(String, ForeignKey('users.username'))
+    username = mapped_column(String, ForeignKey(
+        'users.username', ondelete='CASCADE'))
     user = relationship('User', back_populates='profile')

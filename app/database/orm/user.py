@@ -12,7 +12,7 @@ class User(Base):
     __tablename__ = 'users'
 
     uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
-    username = Column(String(30), primary_key=True, index=True)
+    username = Column(String(30), primary_key=True)
     email = Column(String(30), unique=True, index=True)
     is_mail_confirmed = Column(Boolean, default=False)
     hashed_password = Column(String)
@@ -20,4 +20,9 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True),
                         default=func.now(), onupdate=func.now())
 
-    profile = relationship('Profile', back_populates='user')
+    profile = relationship(
+        'Profile',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        back_populates='user'
+    )
