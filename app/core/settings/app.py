@@ -33,6 +33,8 @@ class AppSettings(BaseSettings):
 
     secret_key: SecretStr
 
+    recaptcha_secret: SecretStr
+
     class Config:
         validate_arguments = True
         env_file = '.env'

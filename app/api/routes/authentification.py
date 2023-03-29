@@ -1,5 +1,7 @@
+import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException
 from pydantic import EmailStr
+from sqlalchemy import except_
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -50,7 +52,7 @@ async def login(
     return UserInResponse(
         status=HTTP_200_OK,
         user=UserWithToken(
-            uuid=user.uuid.hex,
+            id=user.uuid.hex,
             username=user.username,
             email=user.email,
             is_mail_confirmed=user.is_mail_confirmed,
@@ -87,3 +89,24 @@ async def create_user(
             username=db_user.username,
             email=db_user.email
         ))
+
+
+@router.post('/recaptcha')
+async def human_verify(
+        token: str = Form(),
+        settings: AppSettings = Depends(get_app_settings)):
+
+    params = {'secret': settings.recaptcha_secret, 'response': token}
+    try:
+        result = httpx.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            params=params
+        )
+
+    except HTTPException:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail="GO AWAY ROBOT"
+        )
+
+    return {'status': result.status_code, 'is_human': True}
