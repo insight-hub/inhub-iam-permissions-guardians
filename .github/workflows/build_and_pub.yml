@@ -1,0 +1,44 @@
+name: DEPLOY TO DEV
+
+on:
+  push:
+    branches: "main"
+
+jobs:
+  build_and_pub:
+    runs-on: ubuntu-latest
+    env:
+      LOGIN: ${{ secrets.DOCKER_LOGIN }}
+      NAME: ${{ secrets.DOCKER_NAME }}
+
+    steps:
+      - name: Get release tag
+        run: echo "RELEASE_SHA_TAG=`echo dev-${GITHUB_SHA} | cut -c1-12`" >> $GITHUB_ENV
+      - name: Login to docker
+        run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - uses: actions/checkout@v3
+      - name: Create .env
+        run: |
+          touch .env 
+          echo APP_ENV=prod >> .env
+          echo PG_URL=${{ secrets.PG_URL }}>> .env
+          echo REDIS_URL=${{ secrets.REDIS_URL }} >> .env
+          echo MAIL_SERVER=${{ secrets.MAIL_SERVER }}>> .env
+          echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}>> .env
+          echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}>> .env
+          echo MAIL_FROM= ${{ secrets.MAIL_FROM }}>> .env
+          echo RECAPTCHA_SECRET=${{ secrets.RECAPTCHA_SECRET }} >> .env
+          openssl rand -hex 30 | xargs echo SECRET_KEY= >> .env
+      - name: Build image
+        run: docker build -t $LOGIN/$NAME:$RELEASE_SHA_TAG -f Dockerfile .
+      - name: Push image
+        run: docker push $LOGIN/$NAME:$RELEASE_SHA_TAG
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build_and_pub]
+    steps:
+      - name: Get release tag
+        run: echo "RELEASE_SHA_TAG=`echo dev-${GITHUB_SHA} | cut -c1-12`" >> $GITHUB_ENV
+      - name: Send hook
+        run: 'curl --silent --show-error --fail -X POST ${{ secrets.DEPLOYMENT_SERVER }}/update -H ''Authorization: ${{ secrets.CI_TOKEN }}'' -H ''Content-Type: application/json'' -d ''{"owner": "${{ secrets.DOCKER_LOGIN }}", "repository": "${{ secrets.DOCKER_NAME }}", "tag": "${{ env.RELEASE_SHA_TAG }}", "ports": {"8000": 8888}}'''

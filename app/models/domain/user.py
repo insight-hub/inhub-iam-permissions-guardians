@@ -4,7 +4,7 @@ from app.models.domain.rwmodel import RWModel
 
 
 class User(RWModel):
-    uuid: str
+    id: str
     username: str
     email: EmailStr
     is_mail_confirmed: bool

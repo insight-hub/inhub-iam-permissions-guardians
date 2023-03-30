@@ -19,8 +19,8 @@ router = APIRouter(tags=["One time password"])
 
 @ router.post('', response_model=UserInResponse, name="otp:check")
 async def check_one_time_password(
-        username: str = Form(),
-        otp: str = Form(),
+        username: str = Form(max_length=30),
+        otp: str = Form(max_length=10),
         user_repo: UserRepository = Depends(get_repository(UserRepository)),
         settings: AppSettings = Depends(get_app_settings)
 ):
@@ -32,7 +32,7 @@ async def check_one_time_password(
             user=UserInUpdate(username=username, is_mail_confirmed=True))
 
         user = User(
-            uuid=str(db_user.uuid),
+            id=db_user.uuid.hex,
             username=db_user.username,
             email=db_user.email,
             is_mail_confirmed=db_user.is_mail_confirmed
@@ -46,7 +46,7 @@ async def check_one_time_password(
         return UserInResponse(
             status=HTTP_200_OK,
             user=UserWithToken(
-                uuid=user.uuid,
+                id=user.id,
                 username=user.username,
                 email=user.email,
                 is_mail_confirmed=user.is_mail_confirmed,
@@ -56,11 +56,13 @@ async def check_one_time_password(
     except Exception as e:
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=[str(e)],
         )
 
 
 @ router.put('', name='otp:update')
-async def update_one_time_password(username: str = Form()):
+async def update_one_time_password(
+        username: str = Form(min_length=4, max_length=30)
+):
     # TODO send new otp email
     update_otp(username)

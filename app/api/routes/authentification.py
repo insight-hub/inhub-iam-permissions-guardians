@@ -27,8 +27,8 @@ router = APIRouter(tags=['Authentification'])
 
 @router.post('/login', response_model=UserInResponse, name="auth:login")
 async def login(
-    username: str = Form(),
-    password: str = Form(),
+    username: str = Form(min_length=4, max_length=30),
+    password: str = Form(max_length=100),
     user_repo: UserRepository = Depends(get_repository(UserRepository)),
     settings: AppSettings = Depends(get_app_settings)
 ) -> UserInResponse:
