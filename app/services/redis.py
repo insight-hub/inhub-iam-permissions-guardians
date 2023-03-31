@@ -2,6 +2,8 @@ from typing import Optional
 from pydantic import BaseModel
 from redis import Redis
 
+from app.core.config import get_app_settings
+
 # TODO
 
 
@@ -10,7 +12,9 @@ class RedisData(BaseModel):
     value: bytes | str
 
 
-redis_client = Redis(host='localhost')
+settings = get_app_settings()
+
+redis_client = Redis().from_url(url=settings.redis_url)
 
 
 def set_key(data: RedisData, *, is_transaction: bool = False) -> None:
