@@ -7,7 +7,7 @@ from app.models.domain.user import User
 
 from app.models.schemas.jwt import JWTMeta, JWTSubjects, JWTUser
 
-TOKEN_EXPIRED_MINUTES = 60 * 24
+TOKEN_EXPIRED_MINUTES = 1
 ALGORIHTM = "HS256"
 
 

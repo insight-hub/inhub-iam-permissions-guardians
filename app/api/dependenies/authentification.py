@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from starlette.status import HTTP_403_FORBIDDEN
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
 from app.api.dependenies.database import get_repository
 from app.core.config import get_app_settings
@@ -23,8 +23,8 @@ async def get_current_user(
             token, settings.secret_key.get_secret_value())
 
     except ValueError:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN,
-                            detail="Wrong credentionals")
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED,
+                            detail="Invalid token")
 
     try:
         return user_repo.get_by_username(username=username)

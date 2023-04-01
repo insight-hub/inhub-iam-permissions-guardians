@@ -17,8 +17,8 @@ WORKDIR /app
 
 COPY --from=build /app/wheels /wheels
 COPY --from=build /app/requirements.txt .
-RUN pip install --no-cache /wheels/* \
-&& rm -rf /root/.cache/pip
+RUN pip install --no-cache /wheels/* && \
+    rm -rf /root/.cache/pip
 
 COPY . .
 

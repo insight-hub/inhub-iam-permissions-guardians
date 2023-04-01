@@ -11,4 +11,4 @@ router = APIRouter(tags=["Settings"])
 async def create_new_profile(
         user: User = Depends(get_current_user)
 ):
-    pass
+    return {'test': 'test'}
