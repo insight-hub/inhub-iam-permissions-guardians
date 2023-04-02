@@ -20,8 +20,10 @@ services:
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
+    networks:
+      - app
     environment:
-      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_EMAIL=admin@mail.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - "5050:80"
@@ -39,6 +41,7 @@ services:
       - 8888:8000
     depends_on:
       - db
+    restart: on-failure:10
 
 networks:
   app:
