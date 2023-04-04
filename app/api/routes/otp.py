@@ -25,9 +25,8 @@ async def check_one_time_password(
         settings: AppSettings = Depends(get_app_settings)
 ):
     try:
-        if not check_otp(username, otp):
-            return
-
+        check_otp(username, otp)
+    try:
         db_user = user_repo.update_user(
             user=UserInUpdate(username=username, is_mail_confirmed=True))
 
@@ -52,12 +51,6 @@ async def check_one_time_password(
                 is_mail_confirmed=user.is_mail_confirmed,
                 token=token
             ))
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail=[str(e)],
-        )
 
 
 @ router.put('', name='otp:update')

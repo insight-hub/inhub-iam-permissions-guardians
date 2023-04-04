@@ -1,7 +1,9 @@
 import json
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 
 from pydantic import BaseModel
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from app.services import redis
 from app.services.redis import RedisData
@@ -38,13 +40,37 @@ def check_otp(id: str, otp: str):
     pwd_expired = time_diff >= timedelta(seconds=OTP_EXPIRED_SECONDS)
 
     if pwd_expired:
-        raise Exception("Password expired")
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                'status': HTTP_422_UNPROCESSABLE_ENTITY,
+                'message': 'There is error on check one time password',
+                'details': {
+                    'otp': 'One time password expired'
+                }
+            })
 
     if user_otp.is_used:
-        raise Exception("Password already used")
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                'status': HTTP_422_UNPROCESSABLE_ENTITY,
+                'message': 'There is error on check one time password',
+                'details': {
+                    'otp': 'One time password is already used'
+                }
+            })
 
     if user_otp.pwd != otp:
-        raise Exception("Password missmatch")
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                'status': HTTP_422_UNPROCESSABLE_ENTITY,
+                'message': 'There is error on check one time password',
+                'details': {
+                    'otp': 'One time password is not mutch with sended'
+                }
+            })
 
     return True
 
