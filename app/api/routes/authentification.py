@@ -1,11 +1,11 @@
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException
 from pydantic import EmailStr
-from sqlalchemy import except_
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_400_BAD_REQUEST
+    HTTP_400_BAD_REQUEST,
+    HTTP_422_UNPROCESSABLE_ENTITY
 )
 from app.api.dependenies.database import get_repository
 from app.core.config import get_app_settings
@@ -34,7 +34,13 @@ async def login(
 ) -> UserInResponse:
     wrong_login_error = HTTPException(
         status_code=HTTP_400_BAD_REQUEST,
-        detail='Incorrect username or password'
+        detail={
+            'status': HTTP_400_BAD_REQUEST,
+            'message': 'Error on login',
+            'details': {
+                'message': 'Incorect username or password'
+            }
+        }
     )
 
     try:
@@ -70,12 +76,24 @@ async def create_user(
 ):
 
     if check_email_taken(user_repo, email):
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
-                            detail='Email already taken')
+        raise HTTPException(status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail={
+                                'status': HTTP_422_UNPROCESSABLE_ENTITY,
+                                'message': 'There is error on create account',
+                                'details': {
+                                    'email': 'Email already taken'
+                                }
+                            })
 
     if check_username_taken(user_repo, username):
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
-                            detail='Username already taken')
+        raise HTTPException(status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail={
+                                'status': HTTP_422_UNPROCESSABLE_ENTITY,
+                                'message': 'There is error on create account',
+                                'details': {
+                                    'username': 'Username already taken'
+                                }
+                            })
 
     db_user = user_repo.create_new_user(
         username=username, email=email, password=password)
